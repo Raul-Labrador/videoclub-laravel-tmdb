@@ -1,102 +1,101 @@
-/* -------------------------------------- */
-/* Variables de color: Tema Azul Oscuro Moderno */
-/* -------------------------------------- */
-:root {
-    --client-dark: #24293e; /* Fondo oscuro principal */
-    --client-card-bg: #2e354e; /* Fondo de la tarjeta */
-    --client-accent: #00c0a9; /* Teal/Cyan de acento */
-    --client-focus: #4dd0e1; /* Azul claro para el foco/títulos */
-    --client-light: #e0e0e0; /* Texto claro */
-    --client-placeholder: #8892b0; /* Gris azulado para placeholders */
-    --client-border: #444c66; /* Borde sutil */
-    --client-red: #e50914; /* Rojo de edición/peligro */
+/* pelicula/indexStyle.css */
+
+.poster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
 }
 
-/* -------------------------------------- */
-/* Estilos Globales de la Vista */
-/* -------------------------------------- */
-
-/* Título principal de la sección */
-.catalog-header h2 {
-    color: var(--client-focus);
-    font-weight: 700;
-}
-
-/* Botón principal (Añadir Película) */
-.btn-primary-accent {
-    background-color: var(--client-accent);
-    border-color: var(--client-accent);
-    font-weight: 600;
-    color: var(--client-dark);
-    transition: all 0.3s ease;
-}
-.btn-primary-accent:hover {
-    background-color: #38e0cc;
-    border-color: #38e0cc;
-}
-
-
-/* Mensaje de Catálogo Vacío */
-.alert.alert-warning {
-    background-color: var(--client-card-bg) !important;
-    color: var(--client-focus) !important;
-    border-color: var(--client-border) !important;
-}
-
-/* -------------------------------------- */
-/* Estilos de la Tarjeta (Card) */
-/* -------------------------------------- */
-
+/* ── CARD ────────────────────────────────────────────────── */
 .poster-card {
-    background-color: var(--client-card-bg) !important;
-    border: 1px solid var(--client-border) !important;
-    border-radius: 10px !important;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition:
+        border-color 0.25s,
+        transform 0.25s,
+        box-shadow 0.25s;
+}
+.poster-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px var(--gold-glow);
 }
 
-.poster-image {
-    /* CORRECCIÓN CLAVE: Fuerza la imagen a tomar el 100% del ancho de su contenedor */
-    width: 100%; 
-    height: 350px;
+/* ── IMAGEN ──────────────────────────────────────────────── */
+.poster-img-wrap {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: var(--bg3);
+}
+
+.poster-img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 10px 10px 0 0;
-    border-bottom: 3px solid var(--client-accent);
+    transition: transform 0.35s ease;
+}
+.poster-card:hover .poster-img {
+    transform: scale(1.05);
 }
 
-.card-body .card-title {
-    color: var(--client-light);
-    font-weight: 700;
+/* Overlay con botones al hacer hover */
+.poster-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(9, 9, 15, 0.95) 0%,
+        rgba(9, 9, 15, 0.4) 60%,
+        transparent 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.poster-card:hover .poster-overlay {
+    opacity: 1;
+}
+.poster-overlay .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* ── INFO ────────────────────────────────────────────────── */
+.poster-info {
+    padding: 0.875rem 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.poster-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 0.2rem;
+}
+
+.poster-director {
+    font-size: 0.78rem;
+    color: var(--muted);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.card-body .card-text {
-    color: var(--client-placeholder);
-    font-size: 0.9rem;
-}
-
-/* -------------------------------------- */
-/* Estilos de Botones de Acción */
-/* -------------------------------------- */
-
-/* Botón Ver Detalle (Outline Accent) */
-.btn-outline-accent {
-    color: var(--client-accent);
-    border: 1px solid var(--client-accent);
-    transition: all 0.2s ease;
-}
-.btn-outline-accent:hover {
-    background-color: var(--client-accent);
-    color: var(--client-dark);
-}
-
-/* Botón Editar (Outline Danger/Red) */
-.btn-outline-danger-custom {
-    color: var(--client-red);
-    border: 1px solid var(--client-red);
-    transition: all 0.2s ease;
-}
-.btn-outline-danger-custom:hover {
-    background-color: var(--client-red);
-    color: white;
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .poster-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
 }
