@@ -1,42 +1,50 @@
 @extends('bootstrap.template')
 
-@section('title')
-DashBoard
-@endsection
-
-@section('styles')
-<link rel="stylesheet" href="{{ url('assets/css/user/indexStyle.css') }}">
-
-@endsection
+@section('title', 'Dashboard — Usuarios')
 
 @section('content')
 
-<table class="table table-hover">
-  <thead>
-    <tr>
-        <th>#</th>
-        <th>Correo</th>
-        <th>Nombre</th>
-        <th>Verificado</th>
-        <th>Creado</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach($usuarios as $usuario)
+  <div class="page-header">
+    <h1 class="page-title">Dashboard <span>usuarios registrados</span></h1>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
         <tr>
-            <td>{{ $usuario->id }}</td>
-            <td>{{ $usuario->email }}</td>
-            <td>{{ $usuario->name}}</td>
-            <td>{{ $usuario->email_verified_at }}</td>
-            <td>{{ $usuario->created_at }}</td>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Verificado</th>
+          <th>Registrado</th>
         </tr>
-    @endforeach
-  </tbody>
-  <tfoot>
-    <tr>
-        <th colspan="3">Número de usuarios registradas:</th>
-        <th>{{ count($usuarios) }}</th>
-    </tr>
-  </tfoot>
-</table>
+      </thead>
+      <tbody>
+        @foreach($usuarios as $usuario)
+          <tr>
+            <td><span class="badge badge-muted">{{ $usuario->id }}</span></td>
+            <td>{{ $usuario->name }}</td>
+            <td>{{ $usuario->email }}</td>
+            <td>
+              @if($usuario->email_verified_at)
+                <span class="badge badge-green">Verificado</span>
+              @else
+                <span class="badge badge-red">Pendiente</span>
+              @endif
+            </td>
+            <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);">
+              {{ $usuario->created_at->format('d/m/Y') }}
+            </td>
+          </tr>
+        @endforeach
+      </tbody>
+      <tfoot>
+        <tr class="table-footer">
+          <td colspan="4">Total de usuarios registrados</td>
+          <td>{{ count($usuarios) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
 @endsection
