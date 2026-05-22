@@ -50,4 +50,10 @@
 
   </div>
 
+  {{-- Scripts --}}
+  <script src="{{ url('assets/js/main.js') }}"></script>
+  <script src="{{ url('assets/js/toasts.js') }}"></script>
+  @yield('scripts')
+
 @endsection
+

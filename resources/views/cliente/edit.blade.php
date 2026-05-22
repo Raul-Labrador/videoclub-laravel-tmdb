@@ -84,10 +84,5 @@
 @endsection
 
 @section('scripts')
-<script src="{{ url('assets/js/arrastrarPerfil.js') }}"></script>
-<script>
-    const dz = document.getElementById('dropZone');
-    dz.addEventListener('dragover', () => { dz.style.borderColor = 'var(--gold)'; dz.style.background = 'var(--surface2)'; });
-    dz.addEventListener('dragleave', () => { dz.style.borderColor = 'var(--border2)'; dz.style.background = 'var(--bg3)'; });
-</script>
+<script src="{{ url('assets/js/upload.js') }}"></script>
 @endsection

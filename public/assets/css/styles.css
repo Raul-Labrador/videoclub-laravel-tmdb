@@ -67,11 +67,31 @@ body {
     min-height: 100vh;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Efecto de viñeta retro (Monitor CRT) */
+body::before {
+    content: " ";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+    z-index: 9998; /* Un poco debajo de las líneas de escaneo */
 }
 
 a {
     color: inherit;
     text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+a:hover { 
+    opacity: 0.8;
 }
 img {
     max-width: 100%;
@@ -159,6 +179,12 @@ button {
 .navbar-links a.active {
     color: var(--gold);
     background: var(--gold-dim);
+}
+
+.navbar-links a.active {
+    color: var(--gold) !important;
+    background: var(--gold-dim);
+    border-bottom: 2px solid var(--gold); /* Un detalle extra */
 }
 
 .navbar-auth {
@@ -276,6 +302,10 @@ button {
     transition: all 0.2s ease;
     cursor: pointer;
     white-space: nowrap;
+}
+
+.btn:active {
+    transform: translateY(2px) scale(0.98);
 }
 
 .btn-gold {
@@ -456,7 +486,7 @@ tbody td {
 .form-control:focus {
     outline: none;
     border-color: var(--gold);
-    box-shadow: 0 0 0 3px var(--gold-dim);
+    box-shadow: 0 0 10px var(--gold-glow);
 }
 .form-control::placeholder {
     color: var(--dim);
@@ -762,3 +792,186 @@ footer span {
         justify-content: flex-end;
     }
 }
+
+/* ============================================================
+   EFECTOS RETRO / NEÓN / CYBERPUNK
+   ============================================================ */
+
+/* 1. Efecto de monitor antiguo (Scanlines sutiles) */
+body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    /* Crea las líneas horizontales */
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+    background-size: 100% 4px;
+    z-index: 9999;
+    /* Evita que el efecto bloquee los clics del usuario */
+    pointer-events: none; 
+    opacity: 0.4;
+}
+
+/* 2. Animación de parpadeo eléctrico para el logo */
+@keyframes neonFlicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0 0 5px var(--red), 0 0 15px var(--red), 0 0 30px var(--red);
+        opacity: 1;
+    }
+    20%, 24%, 55% {
+        text-shadow: none;
+        opacity: 0.3;
+    }
+}
+
+.navbar-brand span {
+    animation: neonFlicker 4s infinite alternate;
+}
+
+/* 3. Resplandor pulsante para los títulos de sección */
+@keyframes pulseGlow {
+    0% { text-shadow: 0 0 10px var(--gold-glow); }
+    50% { text-shadow: 0 0 20px var(--gold), 0 0 30px var(--gold-glow); }
+    100% { text-shadow: 0 0 10px var(--gold-glow); }
+}
+
+.page-title {
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* ============================================================
+   CUADRÍCULA DE PELÍCULAS (CATÁLOGO)
+   ============================================================ */
+.poster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.poster-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition:
+        border-color 0.25s,
+        transform 0.25s,
+        box-shadow 0.25s;
+}
+
+.poster-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px var(--gold-glow);
+}
+
+.poster-img-wrap {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: var(--bg3);
+}
+
+.poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.poster-card:hover .poster-img {
+    transform: scale(1.05);
+}
+
+.poster-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(9, 9, 15, 0.95) 0%,
+        rgba(9, 9, 15, 0.4) 60%,
+        transparent 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.poster-card:hover .poster-overlay {
+    opacity: 1;
+}
+
+.poster-overlay .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+.poster-info {
+    padding: 0.875rem 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.poster-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.2rem;
+}
+
+.poster-director {
+    font-size: 0.78rem;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+    .poster-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Notificaciones Toast */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    animation: slideInRight 0.3s ease-out;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-success { border-left: 4px solid var(--green); }
+.toast-error { border-left: 4px solid var(--red); }

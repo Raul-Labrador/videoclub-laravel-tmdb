@@ -15,7 +15,7 @@
 </head>
 <body>
 
-  {{-- NAVBAR --}}
+{{-- NAVBAR --}}
   <nav class="navbar">
     <div class="navbar-inner">
 
@@ -26,14 +26,14 @@
 
       {{-- Links públicos --}}
       <div class="navbar-links">
-        <a href="{{ route('main') }}">Inicio</a>
-        <a href="{{ route('pelicula.index') }}">Películas</a>
-        <a href="{{ route('copia.index') }}">Copias</a>
+        <a href="{{ route('main') }}" class="{{ request()->routeIs('main') ? 'active' : '' }}">Inicio</a>
+        <a href="{{ route('pelicula.index') }}" class="{{ request()->routeIs('pelicula.*') ? 'active' : '' }}">Películas</a>
+        <a href="{{ route('copia.index') }}" class="{{ request()->routeIs('copia.*') ? 'active' : '' }}">Copias</a>
 
         @auth
           @if(Auth::user()->hasVerifiedEmail())
-            <a href="{{ route('cliente.index') }}">Clientes</a>
-            <a href="{{ route('alquiler.index') }}">Alquiler</a>
+            <a href="{{ route('cliente.index') }}" class="{{ request()->routeIs('cliente.*') ? 'active' : '' }}">Clientes</a>
+            <a href="{{ route('alquiler.index') }}" class="{{ request()->routeIs('alquiler.*') ? 'active' : '' }}">Alquiler</a>
           @endif
         @endauth
       </div>
@@ -41,13 +41,13 @@
       {{-- Auth --}}
       <div class="navbar-auth">
         @guest
-          <a href="{{ route('login') }}">Login</a>
-          <a href="{{ route('register') }}">Registro</a>
+          <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">Login</a>
+          <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}">Registro</a>
         @else
           @if(Auth::user()->hasVerifiedEmail())
-            <a href="{{ route('dashboard') }}">Dashboard</a>
+            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
           @endif
-          <a href="{{ route('home') }}">Perfil</a>
+          <a href="{{ route('home') }}" class="{{ request()->routeIs('home*') ? 'active' : '' }}">Perfil</a>
           <form action="{{ route('logout') }}" method="POST" style="display:inline">
             @csrf
             <button type="submit" class="btn-nav-logout">Logout</button>

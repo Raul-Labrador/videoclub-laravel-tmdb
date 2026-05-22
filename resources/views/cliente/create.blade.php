@@ -72,11 +72,5 @@
 @endsection
 
 @section('scripts')
-<script src="{{ url('assets/js/arrastrarPerfil.js') }}"></script>
-<script>
-    // Pequeño script en línea para el hover del dropzone sincronizado con el nuevo CSS global
-    const dz = document.getElementById('dropZone');
-    dz.addEventListener('dragover', () => { dz.style.borderColor = 'var(--gold)'; dz.style.background = 'var(--surface2)'; });
-    dz.addEventListener('dragleave', () => { dz.style.borderColor = 'var(--border2)'; dz.style.background = 'var(--bg3)'; });
-</script>
+<script src="{{ url('assets/js/upload.js') }}"></script>
 @endsection
