@@ -1,33 +1,22 @@
-/**
- * borrar.js
- * Gestiona el modal de confirmación de eliminación.
- * No depende de Bootstrap.
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-
   const overlay = document.getElementById('destroyModal');
   const form    = document.getElementById('form-delete');
 
   if (!overlay || !form) return;
 
-  // Abrir modal al hacer clic en cualquier .link-destroy
+  // Seleccionamos todos los enlaces de borrado
   document.querySelectorAll('.link-destroy').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      form.action = btn.dataset.href;
-      overlay.classList.add('active');
+      
+      const url = btn.getAttribute('data-href');
+      if (url) {
+          form.action = url; // Asignamos la ruta al formulario
+          overlay.classList.add('active'); // Mostramos el modal
+      } else {
+          console.error("No se encontró el atributo data-href en el botón de borrar");
+      }
     });
-  });
-
-  // Cerrar al hacer clic en el overlay (fuera del modal)
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeModal();
-  });
-
-  // Cerrar con Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
   });
 });
 

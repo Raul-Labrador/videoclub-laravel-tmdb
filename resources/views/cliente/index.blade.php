@@ -6,7 +6,9 @@
 
   <div class="page-header">
     <h1 class="page-title">Clientes <span>{{ $clientes->count() }} registrados</span></h1>
-    <a href="{{ route('cliente.create') }}" class="btn btn-gold">+ Registrar Cliente</a>
+    @if(Auth::check() && Auth::user()->rol === 'admin')
+        <a href="{{ route('cliente.create') }}" class="btn btn-gold">+ Registrar Cliente</a>
+    @endif
   </div>
 
   @if($clientes->isEmpty())
@@ -18,20 +20,19 @@
     <div class="cliente-grid">
       @foreach($clientes as $cliente)
         <div class="cliente-card">
-          <div class="cliente-avatar">
-            <img src="{{ $cliente->getPath() }}" alt="{{ $cliente->nombre }}">
-          </div>
+          <div class="cliente-avatar"><img src="{{ $cliente->getPath() }}" alt="{{ $cliente->nombre }}"></div>
           <div class="cliente-info">
             <div class="cliente-name">{{ $cliente->nombre }} {{ $cliente->apellidos }}</div>
-            <div class="cliente-email">{{ $cliente->email ?? 'Sin email' }}</div>
+            <div class="cliente-email">{{ $cliente->email }}</div>
           </div>
           <div class="cliente-actions">
             <a href="{{ route('cliente.show', $cliente->id) }}" class="btn btn-outline btn-sm">Ver perfil</a>
-            <a href="{{ route('cliente.edit', $cliente->id) }}" class="btn btn-outline-red btn-sm">Editar</a>
+            @if(Auth::check() && Auth::user()->rol === 'admin')
+                <a href="{{ route('cliente.edit', $cliente->id) }}" class="btn btn-outline-red btn-sm">Editar</a>
+            @endif
           </div>
         </div>
       @endforeach
     </div>
   @endif
-
 @endsection

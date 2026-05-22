@@ -105,12 +105,10 @@
             </td>
             <td>
               <div style="display:flex; gap:0.5rem;">
-                <a href="{{ route('alquiler.edit', $alquiler->id) }}" class="btn btn-outline btn-sm">Editar</a>
-                <a class="btn btn-outline-red btn-sm link-destroy"
-                   data-href="{{ route('alquiler.destroy', $alquiler) }}"
-                   data-id="{{ $alquiler->id }}">
-                  Eliminar
-                </a>
+                @if(Auth::check() && Auth::user()->rol === 'admin')
+                    <a href="{{ route('alquiler.edit', $alquiler->id) }}" class="btn btn-outline btn-sm">Editar</a>
+                    <a class="btn btn-outline-red btn-sm link-destroy" data-href="{{ route('alquiler.destroy', $alquiler) }}">Eliminar</a>
+                @endif
               </div>
             </td>
           </tr>
