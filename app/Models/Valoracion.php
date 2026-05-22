@@ -10,8 +10,7 @@ class Valoracion extends Model {
     
     protected $fillable = ['idpelicula', 'comment'];
 
-    //relación con el modelo Peinado, una valoración pertenece a un peinado
-    function peinado(): BelongsTo {
+    function pelicula(): BelongsTo {
         return $this->belongsTo('App\Models\Pelicula', 'idpelicula');
     }
 
