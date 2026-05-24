@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', [MainController::class, 'main'])->name('main');          
 Route::get('about', [MainController::class, 'about'])->name('about'); 
 
+Route::get('pelicula', [PeliculaController::class, 'index'])->name('pelicula.index');
+Route::get('pelicula/{pelicula}', [PeliculaController::class, 'show'])->name('pelicula.show');
+
 // --- AUTENTICACIÓN ---
 Auth::routes(['verify' => true]);
 
@@ -33,8 +36,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('valoracion/{valoracion}', [ValoracionController::class, 'update'])->name('valoracion.update');
 
     // Rutas de lectura para todos los usuarios registrados
-    Route::get('pelicula', [PeliculaController::class, 'index'])->name('pelicula.index');
-    Route::get('pelicula/{pelicula}', [PeliculaController::class, 'show'])->name('pelicula.show');
     Route::get('copia', [CopiaController::class, 'index'])->name('copia.index');
     Route::get('copia/{copia}', [CopiaController::class, 'show'])->name('copia.show');
     Route::get('cliente', [ClienteController::class, 'index'])->name('cliente.index');

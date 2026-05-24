@@ -18,8 +18,7 @@ class PeliculaApiController extends Controller
      * Muestra una lista de todos los recursos (Películas) con Paginación.
      * GET /api/peliculas?page=N&limit=M
      */
-    public function index(Request $request): JsonResponse
-    {
+    function index(Request $request): JsonResponse {
         // Definir el número de elementos por página (default 15)
         // Permite que el usuario pase un parámetro 'limit' opcional
         $limit = $request->input('limit', 15);
@@ -41,8 +40,7 @@ class PeliculaApiController extends Controller
      * Almacena un recurso recién creado en el almacenamiento.
      * POST /api/peliculas
      */
-    public function store(PeliculaCreateRequest $request, TmdbService $tmdbService): JsonResponse
-    {
+    function store(PeliculaCreateRequest $request, TmdbService $tmdbService): JsonResponse {
         try {
             // La validación se maneja automáticamente por PeliculaCreateRequest
             $validatedData = $request->validated();
@@ -111,8 +109,7 @@ class PeliculaApiController extends Controller
      * Muestra un recurso específico.
      * GET /api/peliculas/{pelicula}
      */
-    public function show(Pelicula $pelicula): JsonResponse
-    {
+    function show(Pelicula $pelicula): JsonResponse {
         // El Route Model Binding ya cargó la película
         return response()->json([
             'success' => true,
@@ -124,8 +121,7 @@ class PeliculaApiController extends Controller
      * Actualiza un recurso específico en el almacenamiento.
      * PUT/PATCH /api/peliculas/{pelicula}
      */
-    public function update(PeliculaEditRequest $request, Pelicula $pelicula): JsonResponse
-    {
+    function update(PeliculaEditRequest $request, Pelicula $pelicula): JsonResponse {
         try {
             // Lógica para manejar la eliminación de portada si es solicitada (no incluida en el request original, pero necesaria)
             
@@ -164,8 +160,7 @@ class PeliculaApiController extends Controller
      * Elimina un recurso específico del almacenamiento.
      * DELETE /api/peliculas/{pelicula}
      */
-    public function destroy(Pelicula $pelicula): JsonResponse
-    {
+    function destroy(Pelicula $pelicula): JsonResponse {
         try {
             // 1. Eliminar la portada del storage
             if ($pelicula->portada) {
