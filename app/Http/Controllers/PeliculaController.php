@@ -17,6 +17,18 @@ use App\Http\Requests\PeliculaCreateRequest;
 
 class PeliculaController extends Controller {
     
+    private function handlePortada(Request $request, Pelicula $pelicula): void {
+        if ($request->deleteImage == 'true' && $pelicula->portada) {
+            Storage::disk('public')->delete($pelicula->portada);
+            $pelicula->portada = null;
+        }
+
+        if ($request->hasFile('portada')) {
+            if ($pelicula->portada) Storage::disk('public')->delete($pelicula->portada);
+            $pelicula->portada = $request->file('portada')->store('portadas', 'public');
+        }
+    }
+
     function index(): View {
 
         // Obtenemos todas las películas para visualizarlas
@@ -34,88 +46,29 @@ class PeliculaController extends Controller {
 
     
     function store(PeliculaCreateRequest $request, TmdbService $tmdbService): RedirectResponse {
-        
-        $pelicula = new Pelicula($request->validated());
-        $result = false;
-        $txtmessage = "";
-        
-        $bestMatch = null; 
-
-        if (!$request->hasFile('portada')) {
-            $searchResults = $tmdbService->searchMovie($request->titulo);
-
-            if (!empty($searchResults['results'])) {
-                $bestMatch = $searchResults['results'][0];
-            }
-        }
-
-
         try {
-
-            $result = $pelicula->save(); 
-            $txtmessage = "La película se ha añadido correctamente.";
-
-
-            if($request->hasFile('portada')) {
- 
-                $ruta = $this->uploadPortada($request, $pelicula);
-                $pelicula->portada = $ruta;
-                $pelicula->save();
-            } 
-
-            else if ($bestMatch && $bestMatch['poster_path']) {
-                
-
-                $imageUrl = $tmdbService->getImageUrl($bestMatch['poster_path']);
-                
-
-                $imageContents = \Illuminate\Support\Facades\Http::get($imageUrl)->body();
-                
-
-                $filename = 'portadas/' . $pelicula->id . '.jpg';
-                
-
-                \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $imageContents);
-
-                $pelicula->portada = $filename;
-                $pelicula->save(); 
-                
-                $txtmessage .= " (Portada de TMDb descargada y aplicada)";
-            }
+            $pelicula = Pelicula::create($request->validated());
             
-        } catch(\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // Si no hay archivo, intentamos TMDB
+            if (!$request->hasFile('portada')) {
+                $tmdb = $tmdbService->searchMovie($pelicula->titulo);
+                if (!empty($tmdb['results'][0]['poster_path'])) {
+                    $imageContents = \Illuminate\Support\Facades\Http::get($tmdbService->getImageUrl($tmdb['results'][0]['poster_path']))->body();
+                    $filename = 'portadas/' . $pelicula->id . '.jpg';
+                    Storage::disk('public')->put($filename, $imageContents);
+                    $pelicula->portada = $filename;
+                    $pelicula->save();
+                }
+            } else {
+                $this->handlePortada($request, $pelicula);
+                $pelicula->save();
+            }
 
-            $txtmessage = "Clave duplicada: Ya existe una película con esa información.";
-        } catch(\Illuminate\Database\QueryException $e) {
-            $txtmessage = "Error en la base de datos: Valor nulo o incorrecto.";
+            return redirect()->route('pelicula.index')->with('mensajeTexto', 'Película creada correctamente.');
         } catch (\Exception $e) {
-
-            $txtmessage = "Error Fatal al guardar la película: " . $e->getMessage();
-        }
-
-        $message = [
-            "mensajeTexto" => $txtmessage,
-        ];
-
-        if ($result){
-            return redirect()->route('main')->with($message);
-        } else {
-            return back()->withInput()->withErrors($message);
+            return back()->withInput()->withErrors(['mensajeTexto' => 'Error al guardar: ' . $e->getMessage()]);
         }
     }
-
-    private function uploadPortada(Request $request, Pelicula $pelicula): string {
-
-        $portada = $request->file('portada');
-
-        $name = $pelicula->id . "." . $portada->getClientOriginalExtension();
-
-        $ruta = $portada->storeAs('portadas', $name, 'public');
-
-        return $ruta;
-    }
-
-
     
     function show(Pelicula $pelicula): View {
 
@@ -129,80 +82,15 @@ class PeliculaController extends Controller {
 
     }
 
-    function update(Request $request, Pelicula $pelicula, TmdbService $tmdbService): RedirectResponse {
-
-        $bestMatch = null; 
-
-        if (!$request->hasFile('portada')) {
-            $searchResults = $tmdbService->searchMovie($request->titulo);
-
-            if (!empty($searchResults['results'])) {
-                $bestMatch = $searchResults['results'][0];
-            }
-        }
-
-        if($request->deleteImage == 'true' && $pelicula->portada) {
-            Storage::delete($pelicula->portada);
-            
-            $pelicula->portada = null;
-        }
-
-        $result = false;
-        $pelicula->fill($request->all());
-        $txtmessage = "";
-
+    function update(Request $request, Pelicula $pelicula): RedirectResponse {
         try {
+            $pelicula->fill($request->all());
+            $this->handlePortada($request, $pelicula);
+            $pelicula->save();
 
-            if($request->hasFile('portada')) {
- 
-                $ruta = $this->uploadPortada($request, $pelicula);
-                $pelicula->portada = $ruta;
-                $pelicula->save();
-            } 
-
-            else if ($bestMatch && $bestMatch['poster_path']) {
-                
-
-                $imageUrl = $tmdbService->getImageUrl($bestMatch['poster_path']);
-                
-
-                $imageContents = \Illuminate\Support\Facades\Http::get($imageUrl)->body();
-                
-
-                $filename = 'portadas/' . $pelicula->id . '.jpg';
-                
-
-                \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $imageContents);
-
-                $pelicula->portada = $filename;
-                $pelicula->save(); 
-                
-                $txtmessage .= " (Portada de TMDb descargada y aplicada)";
-            }
-
-        } catch(UniqueConstraintViolationException $e) {
-
-            $txtmessage = "Clave duplicada: Ya existe una película con esa información.";
-
-        } catch(QueryException $e) {
-
-            $txtmessage = "Error en la base de datos: Valor nulo o incorrecto.";
-
-        }catch (\Exception $e) {
-
-            $txtmessage = "Error fatal al actualizar la película.";
-        }
-
-        $message = [
-            "mensajeTexto" => $txtmessage,
-        ];
-
-        if ($result) {
-
-            return redirect()->route('main')->with($message);
-        } else {
-
-            return back()->withInput()->withErrors($message);
+            return redirect()->route('pelicula.index')->with('mensajeTexto', 'Película actualizada.');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['mensajeTexto' => 'Error al actualizar.']);
         }
     }
 

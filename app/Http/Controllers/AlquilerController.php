@@ -34,38 +34,17 @@ class AlquilerController extends Controller {
     }
 
     function store(AlquilerCreateRequest $request): RedirectResponse {
-        
-        $alquiler = new Alquiler($request->all());
-        $result = false;
-        $txtmessage = "";
-
         try {
-            $result = $alquiler->save(); 
-            $txtmessage = "El registro de alquiler se ha creado correctamente.";
+            $alquiler = Alquiler::create($request->validated());
             
-            $copia = Copia::find($request->idcopia);
-
-            if($alquiler->fecha_dev == null) {
-                $copia->estado = 'Alquilado';
-                $copia->save();
+            // Lógica de negocio: Cambiar estado si se alquila
+            if (!$alquiler->fecha_dev) {
+                Copia::where('id', $alquiler->idcopia)->update(['estado' => 'Alquilado']);
             }
 
-        } catch(UniqueConstraintViolationException $e) {
-            $txtmessage = "Clave duplicada: Ya existe un registro de alquiler.";
-        } 
-
-        $message = [
-            "mensajeTexto" => $txtmessage,
-        ];
-
-        if($result){
-
-            return redirect()->route('main')->with($message);
-
-        } else {
-
-            return back()->withInput()->withErrors($message);
-
+            return redirect()->route('alquiler.index')->with('mensajeTexto', 'Alquiler registrado con éxito.');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['mensajeTexto' => 'Error al registrar el alquiler.']);
         }
     }
 
@@ -78,52 +57,20 @@ class AlquilerController extends Controller {
     }
 
 
-    function update(Request $request, Alquiler $alquiler): RedirectResponse {
-
-        $fechaDevAnterior = $alquiler->fecha_dev;
-
-        $result = false;
-        $alquiler->fill($request->all());
-        $txtmessage = "";
-
-        $devolucionCambiada = ($fechaDevAnterior === null  && $alquiler->fecha_dev !== null);
-
+    public function update(AlquilerCreateRequest $request, Alquiler $alquiler): RedirectResponse {
         try {
+            $estabaAlquilado = $alquiler->fecha_dev === null;
+            
+            $alquiler->update($request->validated());
 
-            $result = $alquiler->save();
-            $txtmessage = "El registro de alquiler se ha actualizado correctamente.";
-
-            $copia = \App\Models\Copia::find($alquiler->idcopia); 
-
-            if($devolucionCambiada) {
-                $copia->estado = 'Disponible';
-                $copia->save();
+            // Si ahora tiene fecha de devolución, liberamos la copia
+            if ($estabaAlquilado && $alquiler->fecha_dev !== null) {
+                Copia::where('id', $alquiler->idcopia)->update(['estado' => 'Disponible']);
             }
 
-        } catch(UniqueConstraintViolationException $e) {
-
-            $txtmessage = "Clave duplicada: Ya existe un registro idéntico de alquiler.";
-
-        } catch(QueryException $e) {
-
-            $txtmessage = "Error en la base de datos: Valor nulo o incorrecto.";
-
+            return redirect()->route('alquiler.index')->with('mensajeTexto', 'Alquiler actualizado correctamente.');
         } catch (\Exception $e) {
-
-            $txtmessage = "Error fatal al actualizar el alquiler.";
-        }
-
-        $message = [
-            "mensajeTexto" => $txtmessage,
-        ];
-
-        if($result) {
-
-            return redirect()->route('main')->with($message);
-
-        } else {
-
-            return back()->withInput()->withErrors($message);
+            return back()->withInput()->withErrors(['mensajeTexto' => 'No se pudo actualizar el alquiler.']);
         }
     }
 
