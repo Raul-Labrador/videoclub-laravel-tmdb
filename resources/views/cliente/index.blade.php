@@ -1,4 +1,4 @@
-@extends('bootstrap.template')
+@extends('layouts.template')
 
 @section('title', 'Clientes')
 
